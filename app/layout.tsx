@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ThemeProvider from "@/app/components/shared/ThemeProvider";
 import NavGate from "@/app/components/shared/NavGate";
+import QueryProvider from "@/app/components/shared/QueryProvider";
 
 export const metadata: Metadata = {
   title: "Bob's Corn — Farm‑fresh popcorn, seasonings, gifts & more",
@@ -15,12 +16,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ThemeProvider>
-          <NavGate />
-          <main>
-            {children}
-          </main>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider>
+            <NavGate />
+            <main>
+              {children}
+            </main>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
