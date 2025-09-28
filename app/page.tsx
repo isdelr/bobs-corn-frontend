@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   Box,
   Container,
@@ -159,7 +160,7 @@ export default function Home() {
         <Grid container spacing={2}>
           {products.map((p) => (
             <Grid key={p.id} size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+              <Card component={Link} href={`/product/${p.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')}`} sx={{ height: "100%", display: "flex", flexDirection: "column", textDecoration: 'none', color: 'inherit' }}>
                 <Box
                   sx={{
                     height: 160,

@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import Link from 'next/link';
 import {
   AppBar,
   Box,
@@ -16,6 +17,7 @@ import {
   Tooltip,
   Button,
 } from "@mui/material";
+import { useCartCount } from "@/app/store/cart";
 import { useTheme } from "@mui/material/styles";
 import { useThemeMode } from "./ThemeProvider";
 import {
@@ -71,6 +73,7 @@ function Navbar() {
   const theme = useTheme();
   const { toggleMode } = useThemeMode();
   const isDark = theme.palette.mode === 'dark';
+  const count = useCartCount();
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -93,7 +96,7 @@ function Navbar() {
             <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 0 }}>
               <Typography
                 variant="h6"
-                component="a"
+                component={Link}
                 href="/"
                 sx={{
                   mr: 1,
@@ -173,7 +176,7 @@ function Navbar() {
 
             <Tooltip title="Cart">
               <IconButton color="inherit" aria-label="shopping cart">
-                <Badge badgeContent={0} color="secondary">
+                <Badge badgeContent={count} color="secondary">
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import ThemeProvider from "@/app/components/ThemeProvider";
-import Navbar from "@/app/components/Navbar";
+import ThemeProvider from "@/app/components/shared/ThemeProvider";
+import Navbar from "@/app/components/shared/Navbar";
 
 export const metadata: Metadata = {
   title: "Bob's Corn — Farm‑fresh popcorn, seasonings, gifts & more",
