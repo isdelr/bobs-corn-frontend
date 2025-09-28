@@ -11,7 +11,8 @@ export async function generateStaticParams() {
   return getAllProducts().map((p) => ({ slug: p.slug }));
 }
 
-export default function ProductPage({ params }: { params: { slug: string } }) {
+export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params;
   const product = getProductBySlug(params.slug);
   if (!product) return notFound();
 
