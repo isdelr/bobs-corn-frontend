@@ -18,6 +18,7 @@ import {
   Tooltip,
   Button,
 } from "@mui/material";
+import { useUser } from "@/app/store/auth";
 import { useCartCount } from "@/app/store/cart";
 import { useTheme } from "@mui/material/styles";
 import { useThemeMode } from "./ThemeProvider";
@@ -75,6 +76,7 @@ function Navbar() {
   const { toggleMode } = useThemeMode();
   const isDark = theme.palette.mode === 'dark';
   const count = useCartCount();
+  const user = useUser();
   const router = useRouter();
   const [term, setTerm] = React.useState('');
 
@@ -194,11 +196,28 @@ function Navbar() {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Account">
-              <IconButton color="inherit" aria-label="account">
-                <Avatar sx={{ width: 32, height: 32 }}>U</Avatar>
-              </IconButton>
-            </Tooltip>
+            {user ? (
+              <Tooltip title="Account">
+                <IconButton color="inherit" aria-label="account">
+                  <Avatar sx={{ width: 32, height: 32 }}>
+                    {user.name?.[0]?.toUpperCase() || 'U'}
+                  </Avatar>
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <>
+                <Button
+                  component={Link}
+                  href="/login"
+                  color="inherit"
+                  size="small"
+                  variant="outlined"
+                  sx={{ textTransform: 'none' }}
+                >
+                  Log in
+                </Button>
+              </>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
