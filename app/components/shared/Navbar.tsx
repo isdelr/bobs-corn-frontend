@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   AppBar,
   Box,
@@ -74,6 +75,14 @@ function Navbar() {
   const { toggleMode } = useThemeMode();
   const isDark = theme.palette.mode === 'dark';
   const count = useCartCount();
+  const router = useRouter();
+  const [term, setTerm] = React.useState('');
+
+  const goSearch = React.useCallback(() => {
+    const q = term.trim();
+    if (q.length === 0) return;
+    router.push(`/search?q=${encodeURIComponent(q)}`);
+  }, [router, term]);
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -151,6 +160,9 @@ function Navbar() {
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ 'aria-label': 'search' }}
+                value={term}
+                onChange={(e) => setTerm(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); goSearch(); } }}
               />
             </Search>
           </Box>
