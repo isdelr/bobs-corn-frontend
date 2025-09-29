@@ -147,14 +147,6 @@ export default function SearchResultsClient({ initialQuery = "" }: SearchResults
           <Button size="small" onClick={clearAll}>Clear</Button>
         </Stack>
 
-        <TextField
-          label="Search within results"
-          size="small"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="popcorn, caramel, kernels"
-        />
-
         <Box>
           <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>Price</Typography>
           <Stack direction="row" spacing={1}>

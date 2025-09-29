@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Container, Box, Grid, Stack, Typography, Paper, Chip, Divider, Accordion, AccordionSummary, AccordionDetails, Button, Rating } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PurchasePanel from '../../components/product/PurchasePanel';
+import ProductGallery from '../../components/product/ProductGallery';
 import type { Product } from '@/app/lib/products';
 import { API_BASE } from '@/app/lib/config';
 
@@ -38,31 +39,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
       <Grid container spacing={3}>
         {/* Media gallery */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Paper
-            elevation={0}
-            sx={{
-              p: 2,
-              borderRadius: 2,
-              border: '1px solid',
-              borderColor: 'divider',
-            }}
-          >
-            <Box
-              sx={{
-                aspectRatio: '1 / 1',
-                borderRadius: 2,
-                background:
-                  'linear-gradient(135deg, rgba(76,175,80,0.15), rgba(38,198,218,0.15))',
-                border: '1px dashed',
-                borderColor: 'divider',
-              }}
-            />
-            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-              {product.images?.slice(0, 4).map((_, idx) => (
-                <Box key={idx} sx={{ flex: 1, height: 64, borderRadius: 1, border: '1px solid', borderColor: 'divider', background: 'linear-gradient(135deg, rgba(38,198,218,0.12), rgba(76,175,80,0.12))' }} />
-              ))}
-            </Stack>
-          </Paper>
+          <ProductGallery images={product.images} title={product.title} />
         </Grid>
 
         {/* Summary + purchase */}
@@ -113,7 +90,12 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
           {featured.map((p) => (
             <Grid key={p.id} size={{ xs: 12, sm: 6, md: 3 }}>
               <Paper elevation={0} sx={{borderRadius: 2, textDecoration: 'none' }} component={Link} href={`/product/${p.slug}`}>
-                <Box sx={{ height: 120, borderRadius: 1, border: '1px solid', borderColor: 'divider', background: 'linear-gradient(135deg, rgba(76,175,80,0.12), rgba(38,198,218,0.12))' }} />
+                <Box
+                  component="img"
+                  src={p.images?.[0] || '/popcorn.jpg'}
+                  alt={`${p.title} image`}
+                  sx={{ height: 120, width: '100%', borderRadius: 1, border: '1px solid', borderColor: 'divider', objectFit: 'cover' }}
+                />
                 <Typography variant="subtitle1" fontWeight={600} sx={{ mt: 1 }}>{p.title}</Typography>
                 <Stack direction="row" alignItems="center" spacing={1}>
                   <Rating size="small" readOnly value={p.rating} precision={0.5} />

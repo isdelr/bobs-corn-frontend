@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import { create } from "zustand";
 
 export type CartLine = {
@@ -59,7 +60,8 @@ export const useCart = create<CartState>((set) => ({
 
 // Selectors
 export function useCartItems() {
-  return useCart((s) => Object.values(s.items));
+  const map = useCart((s) => s.items);
+  return React.useMemo(() => Object.values(map), [map]);
 }
 
 export function useCartCount() {

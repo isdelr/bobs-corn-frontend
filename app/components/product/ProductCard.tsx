@@ -22,13 +22,16 @@ export default function ProductCard({ product }: { product: Product }) {
       href={`/product/${product.slug}`}
     >
       <Box
+        component="img"
+        src={product.images?.[0] || "/popcorn.jpg"}
+        alt={`${product.title} image`}
         sx={{
           height: 160,
+          width: "100%",
           borderRadius: 1.5,
           border: "1px solid",
           borderColor: "divider",
-          background:
-            "linear-gradient(135deg, rgba(76,175,80,0.12), rgba(38,198,218,0.12))",
+          objectFit: "cover",
           mb: 1.5,
         }}
       />

@@ -38,6 +38,7 @@ import {
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useLogoutMutation } from "@/app/lib/queries";
+import CartSheet from "@/app/components/shared/CartSheet";
 
 const Search = styled('div')(({ theme }: { theme: Theme }) => ({
   position: 'relative',
@@ -89,6 +90,7 @@ function Navbar() {
   const [term, setTerm] = React.useState('');
   const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
   const menuOpen = Boolean(menuAnchor);
+  const [cartOpen, setCartOpen] = React.useState(false);
   const logoutMutation = useLogoutMutation();
 
   const goSearch = React.useCallback(() => {
@@ -200,7 +202,7 @@ function Navbar() {
             </Tooltip>
 
             <Tooltip title="Cart">
-              <IconButton color="inherit" aria-label="shopping cart">
+              <IconButton color="inherit" aria-label="shopping cart" onClick={() => setCartOpen(true)}>
                 <Badge badgeContent={count} color="secondary">
                   <ShoppingCartIcon />
                 </Badge>
@@ -271,6 +273,7 @@ function Navbar() {
           </Box>
         </Toolbar>
       </AppBar>
+      <CartSheet open={cartOpen} onClose={() => setCartOpen(false)} />
     </Box>
   );
 }
