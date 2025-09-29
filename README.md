@@ -37,7 +37,6 @@
 - [About](#-about)
 - [Demo](#-demo)
 - [Features](#-features)
-- [Tech Stack](#-tech-stack)
 - [Quick Start](#-quick-start)
 - [Project Structure](#-project-structure)
 - [Architecture](#-architecture)
@@ -114,9 +113,6 @@
 
 - **Build**: [Turbopack](https://turbo.build/pack) - Rust-based bundler
 - **Linting**: [Biome](https://biomejs.dev/) - Fast formatter/linter
-- **Testing**: [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/)
-- **E2E**: [Playwright](https://playwright.dev/) - Cross-browser testing
-- **CI/CD**: [GitHub Actions](https://github.com/features/actions) + [Vercel](https://vercel.com/)
 
 ## 🚀 Quick Start
 
@@ -187,7 +183,6 @@ bobs-corn-frontend/
 │   ├── layout.tsx             # Root layout
 │   └── page.tsx               # Homepage
 ├── 📂 public/                 # Static assets
-├── 📂 docs/                   # Documentation
 ├── 🔧 Configuration Files
 │   ├── next.config.ts         # Next.js config
 │   ├── tsconfig.json          # TypeScript
@@ -209,27 +204,6 @@ graph TB
         D --> E[Backend API]
     end
 ```
-
-<details>
-<summary><b>Click to view detailed architecture</b></summary>
-
-```
-┌─────────────────────────────────────┐
-│         Presentation Layer          │
-│        (React Components)           │
-├─────────────────────────────────────┤
-│         State Management            │
-│        (Zustand Stores)             │
-├─────────────────────────────────────┤
-│          Data Fetching              │
-│        (React Query Hooks)          │
-├─────────────────────────────────────┤
-│           API Client                │
-│      (Centralized with Auth)        │
-└─────────────────────────────────────┘
-```
-
-</details>
 
 ### Rate Limiting Implementation
 
@@ -296,38 +270,6 @@ catch (err: any) {
 
 </details>
 
-## 🧪 Testing
-
-### Running Tests
-
-```bash
-# Unit tests
-npm run test
-
-# Integration tests
-npm run test:integration
-
-# E2E tests
-npm run test:e2e
-
-# Test coverage
-npm run test:coverage
-```
-
-### Test Coverage
-
-| Type | Coverage | Target |
-|------|----------|--------|
-| Statements | 87% | >85% |
-| Branches | 82% | >80% |
-| Functions | 90% | >85% |
-| Lines | 88% | >85% |
-
-## 🚀 Deployment
-
-### Vercel Deployment (Recommended)
-
-```bash
 # Install Vercel CLI
 npm i -g vercel
 
@@ -493,14 +435,6 @@ catch (err: any) {
 3. **Input Validation**: Zod schemas for runtime validation
 4. **Authentication**: Required for purchases
 5. **Rate Limiting**: Backend-enforced business rule
-
-## 🧪 Testing Strategy
-
-### Recommended Test Coverage
-1. **Unit Tests**: Utility functions, custom hooks
-2. **Integration Tests**: API interactions, state management
-3. **E2E Tests**: Critical user flows (purchase, auth)
-4. **Performance Tests**: Bundle size, load times
 
 ## 📈 Performance Optimizations
 
