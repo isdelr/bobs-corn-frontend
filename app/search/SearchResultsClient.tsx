@@ -24,8 +24,9 @@ import {
 import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
 import type { Product } from "@/app/lib/products";
-import { getAllProducts } from "@/app/lib/products";
+import { useSearchProductsQuery } from "@/app/lib/queries";
 import ProductCard from "@/app/components/product/ProductCard";
+import { useToast } from "@/app/components/shared/ToastProvider";
 
 export type SearchResultsClientProps = {
   initialQuery?: string;
@@ -52,10 +53,15 @@ function scoreMatch(p: Product, q: string): number {
 }
 
 export default function SearchResultsClient({ initialQuery = "" }: SearchResultsClientProps) {
-  const all = React.useMemo(() => getAllProducts(), []);
-  const priceMin = Math.min(...all.map((p) => p.price));
-  const priceMax = Math.max(...all.map((p) => p.price));
-  const allTags = Array.from(new Set(all.flatMap((p) => p.tags ?? []))).sort();
+  const { data, isLoading, isError } = useSearchProductsQuery(initialQuery);
+  const { toast } = useToast();
+  React.useEffect(() => {
+    if (isError) toast("Failed to search products.", { severity: "error" });
+  }, [isError, toast]);
+  const all: Product[] = data ?? [];
+  const priceMin = React.useMemo(() => (all.length ? Math.min(...all.map((p) => p.price)) : 0), [all]);
+  const priceMax = React.useMemo(() => (all.length ? Math.max(...all.map((p) => p.price)) : 0), [all]);
+  const allTags = React.useMemo(() => Array.from(new Set(all.flatMap((p) => p.tags ?? []))).sort(), [all]);
 
   // State
   const [query, setQuery] = React.useState(initialQuery);
@@ -74,6 +80,12 @@ export default function SearchResultsClient({ initialQuery = "" }: SearchResults
     // when initial query changes (from server), sync once
     setQuery(initialQuery);
   }, [initialQuery]);
+
+  React.useEffect(() => {
+    if (all.length) {
+      setPriceRange([Math.floor(priceMin), Math.ceil(priceMax)]);
+    }
+  }, [all, priceMin, priceMax]);
 
   const filtered = React.useMemo(() => {
     const q = query.trim();
@@ -271,18 +283,18 @@ export default function SearchResultsClient({ initialQuery = "" }: SearchResults
 
           {/* Results meta */}
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            {filtered.length} {filtered.length === 1 ? "item" : "items"}
+            {isLoading ? "Loading…" : `${filtered.length} ${filtered.length === 1 ? "item" : "items"}`}
           </Typography>
 
           <Grid container spacing={2}>
-            {filtered.map((p) => (
+            {(isLoading ? [] : filtered).map((p) => (
               <Grid key={p.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <ProductCard product={p} />
               </Grid>
             ))}
           </Grid>
 
-          {filtered.length === 0 && (
+          {!isLoading && filtered.length === 0 && (
             <Paper elevation={0} sx={{ mt: 2, p: 3, border: "1px solid", borderColor: "divider", borderRadius: 2, textAlign: "center" }}>
               <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>No results</Typography>
               <Typography variant="body2" color="text.secondary">

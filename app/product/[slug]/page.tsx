@@ -3,18 +3,28 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Container, Box, Grid, Stack, Typography, Paper, Chip, Divider, Accordion, AccordionSummary, AccordionDetails, Button, Rating } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { getAllProducts, getProductBySlug } from '@/app/lib/products';
 import PurchasePanel from '../../components/product/PurchasePanel';
+import type { Product } from '@/app/lib/products';
+import { API_BASE } from '@/app/lib/config';
 
-export async function generateStaticParams() {
-  // prebuild popular products
-  return getAllProducts().map((p) => ({ slug: p.slug }));
+async function fetchProduct(slug: string): Promise<Product | null> {
+  const res = await fetch(`${API_BASE}/products/${encodeURIComponent(slug)}`, { cache: 'no-store' });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error('Failed to load product');
+  return (await res.json()) as Product;
+}
+
+async function fetchFeatured(): Promise<Product[]> {
+  const res = await fetch(`${API_BASE}/products/featured`, { cache: 'no-store' });
+  if (!res.ok) return [];
+  return (await res.json()) as Product[];
 }
 
 export default async function ProductPage(props: { params: Promise<{ slug: string }> }) {
   const params = await props.params;
-  const product = getProductBySlug(params.slug);
+  const product = await fetchProduct(params.slug);
   if (!product) return notFound();
+  const featured = (await fetchFeatured()).filter((p) => p.slug !== product.slug).slice(0, 4);
 
   return (
     <Container sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
@@ -100,7 +110,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
           <Typography variant="h6" fontWeight={700}>You may also like</Typography>
         </Stack>
         <Grid container spacing={2}>
-          {getAllProducts().filter(p => p.slug !== product.slug).slice(0, 4).map((p) => (
+          {featured.map((p) => (
             <Grid key={p.id} size={{ xs: 12, sm: 6, md: 3 }}>
               <Paper elevation={0} sx={{borderRadius: 2, textDecoration: 'none' }} component={Link} href={`/product/${p.slug}`}>
                 <Box sx={{ height: 120, borderRadius: 1, border: '1px solid', borderColor: 'divider', background: 'linear-gradient(135deg, rgba(76,175,80,0.12), rgba(38,198,218,0.12))' }} />

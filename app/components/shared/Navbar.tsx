@@ -17,6 +17,11 @@ import {
   Avatar,
   Tooltip,
   Button,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import { useUser } from "@/app/store/auth";
 import { useCartCount } from "@/app/store/cart";
@@ -30,6 +35,9 @@ import {
   Brightness7 as Brightness7Icon,
   LocationOnOutlined as LocationOnIcon,
 } from "@mui/icons-material";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useLogoutMutation } from "@/app/lib/queries";
 
 const Search = styled('div')(({ theme }: { theme: Theme }) => ({
   position: 'relative',
@@ -79,6 +87,9 @@ function Navbar() {
   const user = useUser();
   const router = useRouter();
   const [term, setTerm] = React.useState('');
+  const [menuAnchor, setMenuAnchor] = React.useState<null | HTMLElement>(null);
+  const menuOpen = Boolean(menuAnchor);
+  const logoutMutation = useLogoutMutation();
 
   const goSearch = React.useCallback(() => {
     const q = term.trim();
@@ -197,13 +208,52 @@ function Navbar() {
             </Tooltip>
 
             {user ? (
-              <Tooltip title="Account">
-                <IconButton color="inherit" aria-label="account">
-                  <Avatar sx={{ width: 32, height: 32 }}>
-                    {user.name?.[0]?.toUpperCase() || 'U'}
-                  </Avatar>
-                </IconButton>
-              </Tooltip>
+              <>
+                <Tooltip title="Account">
+                  <IconButton
+                    color="inherit"
+                    aria-label="account"
+                    onClick={(e) => setMenuAnchor(e.currentTarget)}
+                    aria-controls={menuOpen ? 'account-menu' : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={menuOpen ? 'true' : undefined}
+                  >
+                    <Avatar sx={{ width: 32, height: 32 }}>
+                      {user.name?.[0]?.toUpperCase() || 'U'}
+                    </Avatar>
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  id="account-menu"
+                  anchorEl={menuAnchor}
+                  open={menuOpen}
+                  onClose={() => setMenuAnchor(null)}
+                  onClick={() => setMenuAnchor(null)}
+                  anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                >
+                  <MenuItem onClick={() => router.push('/orders')}>
+                    <ListItemIcon>
+                      <ReceiptLongIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>My orders</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem
+                    onClick={async () => {
+                      try {
+                        await logoutMutation.mutateAsync();
+                        router.push('/login');
+                      } catch {}
+                    }}
+                  >
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Log out</ListItemText>
+                  </MenuItem>
+                </Menu>
+              </>
             ) : (
               <>
                 <Button

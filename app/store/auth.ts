@@ -2,6 +2,7 @@
 import { create } from "zustand";
 
 export type User = {
+  id?: string;
   name: string;
   email: string;
   avatarUrl?: string;
@@ -9,15 +10,45 @@ export type User = {
 
 type AuthState = {
   user: User | null;
-  login: (user: User) => void;
+  token: string | null;
+  login: (user: User, token?: string | null) => void;
   logout: () => void;
 };
 
-// Minimal, client-side auth store (no persistence). Defaults to logged out.
+// Client-side auth store with simple localStorage persistence.
+const initial = (() => {
+  if (typeof window === "undefined") return { user: null as User | null, token: null as string | null };
+  try {
+    const raw = localStorage.getItem("auth");
+    if (raw) {
+      const parsed = JSON.parse(raw) as { user: User | null; token: string | null };
+      return { user: parsed.user, token: parsed.token };
+    }
+  } catch {
+    // ignore
+  }
+  return { user: null as User | null, token: null as string | null };
+})();
+
 export const useAuth = create<AuthState>((set) => ({
-  user: null,
-  login: (user) => set({ user }),
-  logout: () => set({ user: null }),
+  user: initial.user,
+  token: initial.token,
+  login: (user, token: string | null = null) => {
+    set({ user, token });
+    try {
+      localStorage.setItem("auth", JSON.stringify({ user, token }));
+    } catch {
+      // ignore
+    }
+  },
+  logout: () => {
+    set({ user: null, token: null });
+    try {
+      localStorage.removeItem("auth");
+    } catch {
+      // ignore
+    }
+  },
 }));
 
 export function useUser() {

@@ -1,61 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import {
-  Box,
-  Container,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Button,
-  Chip,
-  Stack,
-  Paper,
-  Divider,
-  Rating,
-  TextField,
-} from "@mui/material";
-import {
-  Agriculture as AgricultureIcon,
-  CardGiftcard as GiftIcon,
-  DinnerDining as SeasoningIcon,
-  Storefront as MerchIcon,
-  Spa as NaturalIcon,
-  LocalMall as KernelsIcon,
-  Whatshot as GourmetIcon,
-  LocalOffer as DealIcon,
-} from "@mui/icons-material";
+import { Box, Container, Typography, Grid, Button, Stack, Paper, Divider, Chip } from "@mui/material";
+import CategoriesStrip from "@/app/components/home/CategoriesStrip";
+import FeaturedProducts from "@/app/components/home/FeaturedProducts";
 
 export default function Home() {
-  const categories: { title: string; subtitle: string; Icon: React.ElementType; color: "primary"|"secondary"|"success"|"warning"|"info" }[] = [
-    { title: "Popcorn Kernels", subtitle: "Classic & heirloom", Icon: KernelsIcon, color: "primary" },
-    { title: "Seasonings", subtitle: "Sweet & savory", Icon: SeasoningIcon, color: "secondary" },
-    { title: "Gourmet Flavors", subtitle: "Small‑batch treats", Icon: GourmetIcon, color: "warning" },
-    { title: "Gifts & Bundles", subtitle: "Share the joy", Icon: GiftIcon, color: "success" },
-    { title: "Merch", subtitle: "Tees, hats & more", Icon: MerchIcon, color: "info" },
-    { title: "Farm Experiences", subtitle: "Tours & events", Icon: AgricultureIcon, color: "primary" },
-    { title: "Natural & Organic", subtitle: "Simple ingredients", Icon: NaturalIcon, color: "success" },
-    { title: "Deals", subtitle: "Today’s savings", Icon: DealIcon, color: "secondary" },
-  ];
-
-  const products = Array.from({ length: 8 }).map((_, i) => ({
-    id: i + 1,
-    title: [
-      "Farm‑fresh Yellow Kernels",
-      "White Butterfly Popcorn",
-      "Caramel Drizzle Pack",
-      "Sea Salt & Butter Duo",
-      "Smoky BBQ Seasoning",
-      "Sweet Kettle Corn Kit",
-      "Cheddar Blast Mix",
-      "Holiday Gift Box",
-    ][i],
-    price: [5.99, 6.49, 12.99, 9.99, 7.49, 11.99, 8.99, 24.99][i],
-    rating: 4 + ((i % 3) * 0.5),
-    tag: ["Best Seller", "New", "Limited", "Popular"][i % 4],
-  }));
-
   return (
     <Container sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
       {/* Hero */}
@@ -108,90 +57,22 @@ export default function Home() {
         </Grid>
       </Paper>
 
-      {/* Categories */}
+      {/* Categories (from backend) */}
       <Box sx={{ mt: { xs: 3, md: 5 } }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h5" fontWeight={700}>Shop by category</Typography>
           <Button size="small" variant="text">View all</Button>
         </Stack>
-        <Grid container spacing={2}>
-          {categories.map(({ title, subtitle, Icon, color }, idx) => (
-            <Grid key={title} size={{ xs: 6, sm: 4, md: 3 }}>
-              <Paper
-                elevation={0}
-                sx={{
-                  p: 2,
-                  height: 120,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  borderRadius: 2,
-                  border: "1px solid",
-                  borderColor: "divider",
-                  transition: "transform 120ms ease, box-shadow 120ms ease",
-                  cursor: "pointer",
-                  '&:hover': {
-                    transform: 'translateY(-2px)',
-                    boxShadow: 4,
-                  },
-                }}
-              >
-                <Box>
-                  <Icon color={color as any} />
-                </Box>
-                <Box>
-                  <Typography variant="subtitle1" fontWeight={600} noWrap>{title}</Typography>
-                  <Typography variant="body2" color="text.secondary" noWrap>
-                    {subtitle}
-                  </Typography>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
+        <CategoriesStrip />
       </Box>
 
-      {/* Trending */}
+      {/* Featured products (from backend) */}
       <Box sx={{ mt: { xs: 4, md: 6 } }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h5" fontWeight={700}>Trending now</Typography>
           <Button size="small" variant="text">See more</Button>
         </Stack>
-        <Grid container spacing={2}>
-          {products.map((p) => (
-            <Grid key={p.id} size={{ xs: 12, sm: 6, md: 3 }}>
-              <Card component={Link} href={`/product/${p.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'')}`} sx={{ height: "100%", display: "flex", flexDirection: "column", textDecoration: 'none', color: 'inherit' }}>
-                <Box
-                  sx={{
-                    height: 160,
-                    background:
-                      "linear-gradient(135deg, rgba(76,175,80,0.15), rgba(38,198,218,0.15))",
-                    borderBottom: "1px solid",
-                    borderColor: "divider",
-                  }}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Stack spacing={1}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Chip size="small" label={p.tag} color="primary" variant="outlined" />
-                      <Rating size="small" precision={0.5} value={p.rating} readOnly />
-                    </Stack>
-                    <Typography variant="subtitle1" fontWeight={600} sx={{ lineHeight: 1.3 }}>
-                      {p.title}
-                    </Typography>
-                    <Typography variant="subtitle2" color="text.secondary">
-                      1 lb bag
-                    </Typography>
-                    <Typography variant="h6">${p.price.toFixed(2)}</Typography>
-                  </Stack>
-                </CardContent>
-                <CardActions sx={{ p: 2, pt: 0 }}>
-                  <Button fullWidth variant="contained">Add to cart</Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+        <FeaturedProducts />
       </Box>
 
       {/* Promo banner */}

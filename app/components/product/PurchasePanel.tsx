@@ -4,6 +4,10 @@ import { Box, Button, Chip, Divider, Stack, Typography, Rating, ToggleButton, To
 import type { Product, ProductOption } from '@/app/lib/products';
 import { useCart } from '@/app/store/cart';
 import { LocalShippingOutlined as ShippingIcon, VerifiedOutlined as VerifiedIcon, ReplayOutlined as ReturnIcon } from '@mui/icons-material';
+import { usePurchaseMutation } from '@/app/lib/queries';
+import { useAuth } from '@/app/store/auth';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/app/components/shared/ToastProvider';
 
 function OptionPicker({ option, value, onChange }: { option: ProductOption; value?: string; onChange: (val: string) => void }) {
   return (
@@ -47,6 +51,10 @@ function QuantityPicker({ value, onChange }: { value: number; onChange: (n: numb
 
 export default function PurchasePanel({ product }: { product: Product }) {
   const add = useCart(s => s.addItem);
+  const token = useAuth((s) => s.token);
+  const router = useRouter();
+  const purchaseMutation = usePurchaseMutation();
+  const { toast } = useToast();
   const [qty, setQty] = React.useState(1);
   const [selections, setSelections] = React.useState<Record<string, string>>({});
 
@@ -64,6 +72,22 @@ export default function PurchasePanel({ product }: { product: Product }) {
       },
       qty,
     );
+  };
+
+  const handleBuyNow = async () => {
+    if (!token) {
+      router.push(`/login?next=${encodeURIComponent(`/product/${product.slug}`)}`);
+      return;
+    }
+    try {
+      await purchaseMutation.mutateAsync({
+        items: [{ slug: product.slug, quantity: qty }],
+      });
+      toast('Order placed successfully!', { severity: 'success' });
+      router.push('/orders');
+    } catch (err) {
+      toast((err as any)?.message || 'Failed to place order.', { severity: 'error' });
+    }
   };
 
   return (
@@ -117,6 +141,16 @@ export default function PurchasePanel({ product }: { product: Product }) {
           sx={{ flex: 1, py: 1.2 }}
         >
           Add to cart
+        </Button>
+        <Button
+          size="large"
+          variant="outlined"
+          color="secondary"
+          onClick={handleBuyNow}
+          disabled={!allOptionsSelected || purchaseMutation.isPending}
+          sx={{ flex: 1, py: 1.2 }}
+        >
+          {purchaseMutation.isPending ? 'Processing…' : 'Buy now'}
         </Button>
       </Stack>
 
